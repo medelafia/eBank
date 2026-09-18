@@ -1,8 +1,11 @@
 package com.transactionservice.service;
 
+import com.transactionservice.dto.TransactionRequest;
+import com.transactionservice.dto.TransactionResponse;
 import com.transactionservice.entities.Transaction;
 import com.transactionservice.events.TransactionCreatedEvent;
 import com.transactionservice.repositories.TransactionRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
@@ -10,6 +13,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionService {
@@ -19,18 +23,28 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
     }
 
-    public Transaction save(Transaction transaction) {
+    @Transactional
+    public TransactionResponse save(TransactionRequest transactionRequest) {
+        Transaction transaction = new Transaction(transactionRequest);
 
-        return transactionRepository.save(transaction);
+        return transactionRepository.save(transaction).toTransactionResponse();
     }
-    public List<Transaction> getAccountTransactions(String accountId) {
-        return this.transactionRepository.findAllByAccountId(accountId);
+    public List<TransactionResponse> getAccountTransactions(String accountId) {
+        return this.transactionRepository
+                .findAllByAccountId(accountId)
+                .stream().map(Transaction::toTransactionResponse)
+                .collect(Collectors.toList());
     }
-    public List<Transaction> getTodayTransactions() {
-        return this.transactionRepository.findAllByDate(Date.valueOf(LocalDate.now()));
+    public List<TransactionResponse> getTodayTransactions() {
+        return this.transactionRepository
+                .findAllByDate(Date.valueOf(LocalDate.now()))
+                .stream().map(Transaction::toTransactionResponse)
+                .collect(Collectors.toList());
     }
+
 
     @KafkaListener(topics = "transactions-topic" , groupId = "transaction-group")
+    @Transactional
     public void listenTransaction(TransactionCreatedEvent transactionCreatedEvent) {
         Transaction transaction = Transaction.builder()
                 .transactionId(UUID.randomUUID().toString())

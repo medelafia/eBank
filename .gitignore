@@ -3,9 +3,6 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-banking-frontend/
-ouma/
-ouma-ui/
 volumes
 .env
 kafka/
@@ -42,3 +39,5 @@ build/
 
 .env.*
 
+**/node_modules
+**/.angular/

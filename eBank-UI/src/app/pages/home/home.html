@@ -1,0 +1,152 @@
+<!-- Enhanced Dashboard Design -->
+<div class="py-8 px-6">
+  <!-- Greeting Section -->
+  <div class="mb-8">
+    <h1 class="text-4xl font-bold">
+      What's Up <span class="bg-gradient-to-r from-fuchsia-500 to-purple-600 bg-clip-text text-transparent">Mohamed</span>! 👋
+    </h1>
+    <p class="text-gray-500 mt-2">Welcome back to your dashboard</p>
+  </div>
+
+  <!-- Stats Cards Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    
+    <!-- Users Card -->
+    <div class="group relative bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+      <div class="flex items-start gap-4">
+        <div class="bg-gradient-to-br from-cyan-500 to-cyan-600 p-4 rounded-xl text-white shadow-lg group-hover:shadow-cyan-400/50 transition-shadow">
+          <lucide-icon name="users" [img]="Users" size="24"></lucide-icon>
+        </div>
+        <div class="flex-1">
+          <p class="text-gray-600 text-sm font-medium">Total Users</p>
+          <h2 class="text-3xl font-bold text-gray-900 mt-1">+100</h2>
+          <p class="text-cyan-600 text-xs font-semibold mt-2">↑ 12% from last month</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accounts Card -->
+    <div class="group relative bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+      <div class="flex items-start gap-4">
+        <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 p-4 rounded-xl text-white shadow-lg group-hover:shadow-emerald-400/50 transition-shadow">
+          <lucide-icon name="credit-card" [img]="Tickets" size="24"></lucide-icon>
+        </div>
+        <div class="flex-1">
+          <p class="text-gray-600 text-sm font-medium">Active Accounts</p>
+          <h2 class="text-3xl font-bold text-gray-900 mt-1">+100</h2>
+          <p class="text-emerald-600 text-xs font-semibold mt-2">↑ 8% from last month</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transactions Card -->
+    <div class="group relative bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+      <div class="flex items-start gap-4">
+        <div class="bg-gradient-to-br from-violet-500 to-violet-600 p-4 rounded-xl text-white shadow-lg group-hover:shadow-violet-400/50 transition-shadow">
+          <lucide-icon name="trending-up" size="24"></lucide-icon>
+        </div>
+        <div class="flex-1">
+          <p class="text-gray-600 text-sm font-medium">Total Revenue</p>
+          <h2 class="text-3xl font-bold text-gray-900 mt-1">$24.5K</h2>
+          <p class="text-violet-600 text-xs font-semibold mt-2">↑ 15% from last month</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Recent Transactions Section -->
+  <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+    <!-- Header -->
+    <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+      <h2 class="text-xl font-bold text-gray-900">Recent Transactions</h2>
+      <p class="text-gray-600 text-sm mt-1">Latest account activity</p>
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto">
+      <p-table 
+        [value]="recentTransactions" 
+        [tableStyle]="{ 'min-width': '100%' }"
+        styleClass="p-datatable-sm"
+        [paginator]="true" 
+        [rows]="10"
+        responsiveLayout="scroll">
+        
+        <ng-template #header>
+          <tr class="bg-gray-50 border-b border-gray-200">
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">ID</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">From</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">To</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Amount</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Date</th>
+          </tr>
+        </ng-template>
+
+        <ng-template #body let-transaction>
+          <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4">
+              <code class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">{{ transaction.id }}</code>
+            </td>
+            <td class="px-6 py-4">
+              <p class="font-medium text-gray-900">{{ transaction.from }}</p>
+            </td>
+            <td class="px-6 py-4">
+              <p class="font-medium text-gray-900">{{ transaction.to }}</p>
+            </td>
+            <td class="px-6 py-4">
+              <p class="font-semibold text-gray-900">{{ transaction.amount }}</p>
+            </td>
+            <td class="px-6 py-4">
+              <!-- Status Badge -->
+              <span 
+                *ngIf="transaction.status === 'completed'"
+                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                <span class="w-2 h-2 bg-green-600 rounded-full mr-2"></span>
+                Completed
+              </span>
+              <span 
+                *ngIf="transaction.status === 'pending'"
+                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
+                <span class="w-2 h-2 bg-yellow-600 rounded-full mr-2 animate-pulse"></span>
+                Pending
+              </span>
+              <span 
+                *ngIf="transaction.status === 'failed'"
+                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                <span class="w-2 h-2 bg-red-600 rounded-full mr-2"></span>
+                Failed
+              </span>
+            </td>
+            <td class="px-6 py-4">
+              <p class="text-sm text-gray-600">{{ transaction.date }} <span class="text-gray-400">{{ transaction.time }}</span></p>
+            </td>
+          </tr>
+        </ng-template>
+
+        <!-- Empty State -->
+        <ng-template #emptymessage>
+          <tr>
+            <td colspan="6" class="text-center py-8">
+              <p class="text-gray-500">No transactions found</p>
+            </td>
+          </tr>
+        </ng-template>
+
+      </p-table>
+    </div>
+  </div>
+
+</div>
+
+<!-- Optional: Add to your component.ts -->
+<!--
+export class DashboardComponent {
+  recentTransactions = [
+    { id: 'TXN001', from: 'Account A', to: 'Account B', amount: '$500', status: 'completed', date: '2024-01-15', time: '10:30 AM' },
+    { id: 'TXN002', from: 'Account C', to: 'Account D', amount: '$250', status: 'pending', date: '2024-01-15', time: '11:45 AM' },
+    { id: 'TXN003', from: 'Account E', to: 'Account F', amount: '$1200', status: 'completed', date: '2024-01-14', time: '09:15 AM' },
+  ];
+}
+-->

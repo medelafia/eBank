@@ -15,6 +15,6 @@ public class EventsConsumer {
 
     @KafkaListener(topics = "notifications-topic" , groupId="notification-group")
     public void consume(NotificationEvent notificationEvent){
-        this.mailService.sendMail(notificationEvent.getEmail(),"Banking notification", notificationEvent.getMessage());
+        this.mailService.sendMail(notificationEvent.getEmail(),"Banking notification " , notificationEvent.getMessage());
     }
 }

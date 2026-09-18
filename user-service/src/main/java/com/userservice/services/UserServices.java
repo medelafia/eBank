@@ -1,6 +1,8 @@
 package com.userservice.services;
 
 
+import com.userservice.dto.UserRequest;
+import com.userservice.dto.UserResponse;
 import com.userservice.entities.NotificationEvent;
 import com.userservice.entities.User;
 import com.userservice.enums.NotificationEventType;
@@ -16,6 +18,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServices {
@@ -27,14 +30,19 @@ public class UserServices {
         this.userRepository = userRepository;
         this.kafkaTemplate = kafkaTemplate;
     }
-    public List<User> getAllUsers() {
-        return this.userRepository.findAll();
+    public List<UserResponse> getAllUsers() {
+        return this.userRepository
+                .findAll()
+                .stream()
+                .map(User::toUserResponse)
+                .collect(Collectors.toList());
     }
-    public User findUserById(String userId) {
+    public UserResponse findUserById(String userId) {
         System.out.println(userId);
-        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found")).toUserResponse();
     }
-    public User createUser(User user) {
+    public UserResponse createUser(UserRequest userRequest) {
+        User user = new User(userRequest);
         user.setId(UUID.randomUUID().toString());
         this.kafkaTemplate.send(
                 TOPIC ,
@@ -47,10 +55,11 @@ public class UserServices {
                         .build()
                 ) ;
 
-        return userRepository.save(user);
+        return userRepository.save(user).toUserResponse();
     }
-    public User updateUser(User user) {
-        return userRepository.save(user);
+    public UserResponse updateUser(UserRequest userRequest) {
+        User user = new User(userRequest);
+        return userRepository.save(user).toUserResponse();
     }
     public void deleteUser(String id) {
         if(!userRepository.existsById(id)) {

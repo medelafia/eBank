@@ -1,0 +1,36 @@
+<div class="flex items-center justify-center py-16 bg-fuchsia-50 h-screen">
+    <p-toast />
+    <form class="w-2xl rounded-xl !border !border-gray-300 p-16 bg-white" [formGroup]="loginForm">
+        <div class="mb-12">
+            <div class="flex mb-2 items-center">
+                <div class="bg-fuchsia-600 p-3 text-white w-min rounded-xl me-2 ">
+                    <lucide-icon name="users" [img]="UserRoundKey"></lucide-icon>
+                </div>
+                <h1 class="text-4xl text-fuchsia-600">Welcome to your online bank!</h1>
+            </div>
+            
+            <p class="text-gray-500">Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias nostrum reiciendis saepe necessitatibus! </p>
+        </div>
+            
+
+        <div class="flex flex-col gap-2 w-full my-4">
+            <input pInputText id="username" placeholder="Username" aria-describedby="username-help" formControlName="username" />
+            @if(getFormControl("username")?.dirty && !getFormControl("username")?.valid) {
+                <small class="text-red-500" id="username-help">Please enter your username.</small>
+            }
+        </div>
+        <div class="flex flex-col gap-2 w-full me-2 my-4">
+            <input pInputText id="password" placeholder="Password" aria-describedby="password-help" formControlName="password" />
+            @if(getFormControl("password")?.dirty && !getFormControl("password")?.valid) {
+                <small class="text-red-500" id="password-help">Please enter your password.</small>
+            }
+        </div>
+        <div class="flex items-center mt-4">
+            <p-checkbox inputId="rememberMe" name="rememberMe" value="rememberMe" formControlName="rememberMe" />
+            <label for="rememberMe" class="ml-2"> Remember Me </label>
+        </div>
+        <p-button [loading]="loading" label="Sign In" styleClass="!bg-linear-to-bl !from-violet-500 !to-fuchsia-500 !px-8 mt-8 w-full" size="small" icon="pi pi-sign-in" (onClick)="login()"/>
+
+    </form>
+
+</div>

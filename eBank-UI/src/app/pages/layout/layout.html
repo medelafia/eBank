@@ -1,0 +1,120 @@
+<!-- Enhanced Main Application Layout -->
+<div class="flex bg-gray-50 h-screen">
+  
+  <!-- Sidebar (App Header) -->
+  <app-header />
+
+  <!-- Main Content Area -->
+  <div class="w-full flex flex-col overflow-hidden">
+    
+    <!-- Top Navigation Bar -->
+    <div class="flex items-center justify-between px-8 py-4 bg-white border-b border-gray-200 shadow-sm">
+      
+      <!-- Left Section: Sidebar Toggle & Breadcrumb -->
+      <div class="flex items-center gap-4">
+        <!-- Sidebar Toggle Button -->
+        <p-button 
+          icon="pi pi-angle-double-left" 
+          variant="text" 
+          severity="secondary"
+          (click)="toggleSidebar()"
+          styleClass="hover:!bg-gray-100 transition-colors duration-200">
+        </p-button>
+
+        <!-- Breadcrumb Navigation (Optional) -->
+        <div class="flex items-center gap-2 text-sm text-gray-600 ml-4 hidden sm:flex">
+          <span class="text-gray-400">Dashboard</span>
+          <i class="pi pi-chevron-right text-gray-300 text-xs"></i>
+          <span class="text-gray-800 font-medium">{{ currentPage }}</span>
+        </div>
+      </div>
+
+      <!-- Right Section: Search, Notifications, User Profile -->
+      <div class="flex items-center gap-4">
+        
+        <!-- Search Bar (Optional) -->
+        <div class="hidden md:flex items-center bg-gray-100 rounded-lg px-4 py-2 gap-2">
+          <i class="pi pi-search text-gray-400 text-sm"></i>
+          <input 
+            type="text" 
+            placeholder="Search..." 
+            class="bg-transparent outline-none text-sm w-48 text-gray-700 placeholder-gray-400">
+        </div>
+
+        <!-- Notifications Button (Optional) -->
+        <p-button 
+          icon="pi pi-bell" 
+          variant="text" 
+          severity="secondary"
+          [badge]="notificationCount > 0 ? notificationCount.toString() : undefined"
+          styleClass="hover:!bg-gray-100 transition-colors duration-200">
+        </p-button>
+
+        <!-- Divider -->
+        <div class="hidden md:block w-px h-6 bg-gray-200"></div>
+
+        <!-- User Profile Menu -->
+        <div class="flex items-center gap-3 ml-2">
+          <!-- Avatar -->
+          <p-avatar 
+            [image]="userProfileImage" 
+            shape="circle" 
+            size="large"
+            class="cursor-pointer hover:opacity-80 transition-opacity duration-200"
+            (click)="toggleUserMenu($event)">
+          </p-avatar>
+
+          <!-- User Info (Optional - Hidden on Mobile) -->
+          <div class="hidden sm:flex flex-col">
+            <p class="text-sm font-semibold text-gray-900">{{ userFirstName }}</p>
+            <p class="text-xs text-gray-500">{{ userRole }}</p>
+          </div>
+
+          <!-- User Dropdown Menu (Optional) -->
+          <p-menu 
+            #userMenu 
+            [model]="userMenuItems" 
+            [popup]="true"
+            [showTransitionOptions]="'100ms cubic-bezier(0.86, 0, 0.07, 1)'"
+            [hideTransitionOptions]="'100ms cubic-bezier(0.86, 0, 0.07, 1)'">
+          </p-menu>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 overflow-y-auto">
+      <div class="py-8 px-8 md:px-12">
+        <router-outlet />
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Optional: Responsive Mobile Header (For smaller screens) -->
+<!--
+<div class="flex overflow-hidden bg-gray-50 h-screen md:hidden flex-col">
+  
+  <div class="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+    <p-button 
+      icon="pi pi-bars" 
+      variant="text" 
+      severity="secondary"
+      (click)="toggleMobileSidebar()">
+    </p-button>
+    <div class="text-lg font-bold text-gray-900">Banking</div>
+    <p-avatar [image]="userProfileImage" shape="circle" size="large"></p-avatar>
+  </div>
+
+  <div class="flex-1 overflow-y-auto">
+    <div class="py-6 px-4">
+      <router-outlet />
+    </div>
+  </div>
+
+</div>
+-->

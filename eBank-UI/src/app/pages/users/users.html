@@ -1,0 +1,311 @@
+<div class="w-full user-management-page">
+  <p-toast />
+
+  <!-- ==================== HEADER ==================== -->
+  <div class="page-header">
+    <div>
+      <div class="header-eyebrow">
+        <i class="pi pi-users"></i>
+        <span>Admin</span>
+      </div>
+      <h1 class="header-title">User Management</h1>
+      <p class="header-sub">Manage all users in the system.</p>
+    </div>
+
+    <p-button
+      label="Add user"
+      icon="pi pi-plus"
+      size="small"
+      styleClass="add-user-btn"
+      (onClick)="showAddUserDialog()"
+    />
+  </div>
+
+  <!-- ==================== TABLE CARD ==================== -->
+  <div class="table-card">
+    <p-table
+      [value]="users"
+      [paginator]="true"
+      [rows]="5"
+      [tableStyle]="{ 'min-width': '50rem' }"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      [loading]="loading()"
+      size="small"
+      styleClass="users-table"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} users"
+    >
+      <ng-template #header>
+        <tr>
+          <th>User ID</th>
+          <th>Name</th>
+          <th>Phone Number</th>
+          <th>Email</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </ng-template>
+
+      @if (users.length > 0) {
+        <ng-template #body let-user>
+          <tr>
+            <!-- User ID -->
+            <td>
+              <span class="user-id" [title]="user.id">
+                {{ user.id }}
+              </span>
+            </td>
+
+            <!-- Name with avatar -->
+            <td>
+              <div class="user-cell">
+                <div class="user-avatar">
+                  {{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}
+                </div>
+                <div class="user-name">
+                  <span class="user-fullname">{{ user.firstName }} {{ user.lastName }}</span>
+                  <span class="user-handle">@{{ user.firstName.toLowerCase() }}{{ user.lastName.toLowerCase() }}</span>
+                </div>
+              </div>
+            </td>
+
+            <!-- Phone -->
+            <td>
+              <span class="phone-cell">
+                <i class="pi pi-phone"></i>
+                {{ user.phoneNumber }}
+              </span>
+            </td>
+
+            <!-- Email -->
+            <td>
+              <a class="email-cell" [href]="'mailto:' + user.email" [title]="user.email">
+                <i class="pi pi-envelope"></i>
+                <span>{{ user.email }}</span>
+              </a>
+            </td>
+
+            <!-- Actions -->
+            <td>
+              <div class="actions-cell">
+                <p-button
+                  icon="pi pi-pencil"
+                  severity="info"
+                  size="small"
+                  variant="text"
+                  [rounded]="true"
+                  pTooltip="Edit user"
+                  tooltipPosition="top"
+                  (onClick)="showEditUserDialog(user)"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  size="small"
+                  variant="text"
+                  [rounded]="true"
+                  pTooltip="Delete user"
+                  tooltipPosition="top"
+                  (onClick)="deleteUserById(user.id)"
+                />
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      } @else {
+        <ng-template #emptymessage>
+          <tr>
+            <td colspan="5">
+              <div class="empty-state">
+                <div class="empty-icon-wrap">
+                  <i class="pi pi-users"></i>
+                </div>
+                <h3 class="empty-title">No users yet</h3>
+                <p class="empty-sub">Click <strong>Add user</strong> to create the first one.</p>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      }
+    </p-table>
+  </div>
+
+  <!-- ==================== ADD USER DIALOG ==================== -->
+  <p-dialog
+    [(visible)]="addDialogVisible"
+    [style]="{ width: '40rem' }"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    styleClass="user-dialog"
+  >
+    <ng-template pTemplate="header">
+      <div class="dialog-header">
+        <div class="dialog-icon">
+          <i class="pi pi-user-plus"></i>
+        </div>
+        <div>
+          <h2 class="dialog-title">Add User</h2>
+          <p class="dialog-sub">Create a new user account.</p>
+        </div>
+      </div>
+    </ng-template>
+
+    <form class="dialog-form" [formGroup]="userFormGroup">
+      <!-- First + Last -->
+      <div class="field-row">
+        <div class="field">
+          <label for="firstName" class="field-label">First name</label>
+          <input
+            pInputText
+            id="firstName"
+            placeholder="John"
+            aria-describedby="firstName-help"
+            formControlName="firstName"
+            fluid
+          />
+          <small id="firstName-help" class="field-help">The user's first name.</small>
+        </div>
+
+        <div class="field">
+          <label for="lastName" class="field-label">Last name</label>
+          <input
+            pInputText
+            id="lastName"
+            placeholder="Doe"
+            aria-describedby="lastName-help"
+            formControlName="lastName"
+          />
+          <small id="lastName-help" class="field-help">The user's last name.</small>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="field">
+        <label for="email" class="field-label">Email</label>
+        <input
+          pInputText
+          id="email"
+          type="email"
+          placeholder="john.doe@example.com"
+          aria-describedby="email-help"
+          formControlName="email"
+        />
+        <small id="email-help" class="field-help">Used for login and notifications.</small>
+      </div>
+
+      <!-- Phone -->
+      <div class="field">
+        <label for="phoneNumber" class="field-label">Phone number</label>
+        <input
+          pInputText
+          id="phoneNumber"
+          placeholder="+212 6 12 34 56 78"
+          aria-describedby="phoneNumber-help"
+          formControlName="phoneNumber"
+        />
+        <small id="phoneNumber-help" class="field-help">Include the country code.</small>
+      </div>
+
+      <p-button
+        label="Save User"
+        icon="pi pi-save"
+        size="small"
+        styleClass="dialog-submit"
+        [loading]="saveLoading"
+        (onClick)="saveUser()"
+      />
+    </form>
+  </p-dialog>
+
+  <!-- ==================== EDIT USER DIALOG ==================== -->
+  @if (userToEdit != undefined) {
+    <p-dialog
+      [(visible)]="editDialogVisible"
+      [style]="{ width: '40rem' }"
+      [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+      [modal]="true"
+      [draggable]="false"
+      [resizable]="false"
+      styleClass="user-dialog"
+    >
+      <ng-template pTemplate="header">
+        <div class="dialog-header">
+          <div class="dialog-icon dialog-icon-edit">
+            <i class="pi pi-user-edit"></i>
+          </div>
+          <div>
+            <h2 class="dialog-title">Update User</h2>
+            <p class="dialog-sub">Edit the details of this user.</p>
+          </div>
+        </div>
+      </ng-template>
+
+      <div class="dialog-form">
+        <!-- First + Last -->
+        <div class="field-row">
+          <div class="field">
+            <label for="firstName" class="field-label">First name</label>
+            <input
+              pInputText
+              id="firstName"
+              placeholder="John"
+              aria-describedby="firstName-help"
+              [(ngModel)]="userToEdit.firstName"
+              fluid
+            />
+            <small id="firstName-help" class="field-help">The user's first name.</small>
+          </div>
+
+          <div class="field">
+            <label for="lastName" class="field-label">Last name</label>
+            <input
+              pInputText
+              id="lastName"
+              placeholder="Doe"
+              aria-describedby="lastName-help"
+              [(ngModel)]="userToEdit.lastName"
+            />
+            <small id="lastName-help" class="field-help">The user's last name.</small>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="field">
+          <label for="email" class="field-label">Email</label>
+          <input
+            pInputText
+            id="email"
+            type="email"
+            placeholder="john.doe@example.com"
+            aria-describedby="email-help"
+            [(ngModel)]="userToEdit.email"
+          />
+          <small id="email-help" class="field-help">Used for login and notifications.</small>
+        </div>
+
+        <!-- Phone -->
+        <div class="field">
+          <label for="phoneNumber" class="field-label">Phone number</label>
+          <input
+            pInputText
+            id="phoneNumber"
+            placeholder="+212 6 12 34 56 78"
+            aria-describedby="phoneNumber-help"
+            [(ngModel)]="userToEdit.phoneNumber"
+          />
+          <small id="phoneNumber-help" class="field-help">Include the country code.</small>
+        </div>
+
+        <p-button
+          label="Save User"
+          icon="pi pi-save"
+          size="small"
+          styleClass="dialog-submit dialog-submit-edit"
+          [loading]="editLoading"
+          (onClick)="editUser()"
+        />
+      </div>
+    </p-dialog>
+  }
+</div>

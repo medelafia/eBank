@@ -1,9 +1,6 @@
 package com.accountservice.services;
 
-import com.accountservice.dto.AccountResponse;
-import com.accountservice.dto.NotificationEvent;
-import com.accountservice.dto.OperationRequest;
-import com.accountservice.dto.OperationResponse;
+import com.accountservice.dto.*;
 import com.accountservice.entities.Account;
 import com.accountservice.entities.User;
 import com.accountservice.enums.NotificationEventType;
@@ -15,6 +12,7 @@ import com.accountservice.exceptions.TransactionException;
 import com.accountservice.repositories.AccountRepository;
 import com.accountservice.repositories.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -60,16 +58,19 @@ public class AccountServices {
     }
 
     @Transactional
-    public AccountResponse createAccount(Account account) {
-        if(this.userRepository.findById(account.getUser().getId()).getStatusCode().isError()) {
+    public AccountResponse createAccount(AccountRequest accountRequest) {
+        Account account = new Account(accountRequest);
+        ResponseEntity<User> userResponseEntity = this.userRepository.findById(account.getUser().getId());
+
+        if(userResponseEntity.getStatusCode().isError()) {
             throw new AccountNotFoundException("User with id " + account.getUser().getId() + " doesn't exist");
         }
-        account.setUserId(account.getUser().getId());
-        account.setAccountId(UUID.randomUUID().toString());
+        account.setUserId(userResponseEntity.getBody().getId());
         account.setCreatedAt(Date.valueOf(LocalDate.now()));
+        account.setUser(userResponseEntity.getBody());
 
         Account savedAccount = this.accountRepository.save(account);
-        savedAccount.setUser(this.userRepository.findById(account.getUser().getId()).getBody());
+        savedAccount.setUser(userResponseEntity.getBody());
 
         this.kafkaTemplateNotification.send(
                 NOTIFICATION_TOPIC ,
@@ -79,6 +80,39 @@ public class AccountServices {
                         .notificationEventType(NotificationEventType.ACCOUNT_CREATED_EVENT)
                         .timestamp(Timestamp.from(Instant.now()))
                         .email(account.getUser().getEmail())
+                        .build()
+        );
+
+        return AccountResponse.from(savedAccount);
+    }
+    @Transactional
+    public AccountResponse updateAccount(AccountRequest accountRequest) {
+        Optional<Account> accountOptional = this.accountRepository.findById(accountRequest.getAccountId());
+        if(accountOptional.isEmpty()) {
+            throw new AccountNotFoundException("Account with id " + accountRequest.getAccountId() + " doesn't exist");
+        }
+
+        Account account = accountOptional.get();
+        ResponseEntity<User> userResponseEntity = this.userRepository.findById(account.getUserId());
+
+        if(userResponseEntity.getStatusCode().isError()) {
+            throw new AccountNotFoundException("User with id " + account.getUserId() + " doesn't exist");
+        }
+
+        account.setAccountType(accountRequest.getAccountType());
+        account.setStatus(accountRequest.getStatus());
+
+        Account savedAccount = this.accountRepository.save(account);
+        savedAccount.setUser(userResponseEntity.getBody());
+
+        this.kafkaTemplateNotification.send(
+                NOTIFICATION_TOPIC ,
+                NotificationEvent.builder()
+                        .eventId(UUID.randomUUID().toString())
+                        .message("Account updated")
+                        .notificationEventType(NotificationEventType.ACCOUNT_CREATED_EVENT)
+                        .timestamp(Timestamp.from(Instant.now()))
+                        .email(savedAccount.getUser().getEmail())
                         .build()
         );
 

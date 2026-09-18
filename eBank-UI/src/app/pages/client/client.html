@@ -1,0 +1,241 @@
+<div class="dashboard-page">
+  <div class="container-fluid dashboard-container">
+
+    <!-- ==================== HEADER ==================== -->
+    <header class="profile-bar">
+      <div class="profile-left">
+        <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/asiyajavayant.png"
+          size="large"
+          shape="circle"
+          class="profile-avatar"
+        />
+        <div class="profile-info">
+          <h1 class="profile-name">{{ user?.firstName }} {{ user?.lastName }}</h1>
+          <p class="profile-id">ID · {{ userId }}</p>
+        </div>
+      </div>
+
+      <p-button
+        size="small"
+        variant="text"
+        icon="pi pi-sign-out"
+        label="Logout"
+        (onClick)="logout()"
+        styleClass="logout-btn"
+      />
+    </header>
+
+    <!-- ==================== MAIN GRID ==================== -->
+    <div class="dashboard-grid">
+
+      <!-- LEFT COLUMN -->
+      <div class="dashboard-col-left">
+
+        <!-- Balance Card -->
+        <div class="balance-card">
+          <div class="balance-orb balance-orb-1"></div>
+          <div class="balance-orb balance-orb-2"></div>
+
+          <div class="balance-head">
+            <div>
+              <span class="balance-label">Available Balance</span>
+              <p class="balance-amount">
+                {{ activeAccount?.balance }}
+                <span class="balance-currency">{{ activeAccount?.currency }}</span>
+              </p>
+            </div>
+
+            <p-button
+              label="Switch"
+              size="small"
+              icon="pi pi-sync"
+              [rounded]="true"
+              (click)="op.toggle($event)"
+              [disabled]="userAccounts!.length == 1"
+              styleClass="switch-btn"
+            />
+          </div>
+
+          <div class="balance-foot">
+            <div class="card-number">
+              <span class="card-dots">•••• •••• ••••</span>
+              <span class="card-last4">
+                {{ activeAccount?.accountId?.substring(activeAccount?.accountId!.lastIndexOf("-") + 1, activeAccount?.accountId?.length) }}
+              </span>
+            </div>
+            <span class="account-chip">{{ activeAccount?.accountType }}</span>
+          </div>
+        </div>
+
+        <!-- Operations -->
+        <div class="operations-card">
+          <h2 class="section-title">Operations</h2>
+
+          <div class="operations-grid">
+            <p-button
+              [rounded]="true"
+              label="Transfer"
+              icon="pi pi-send"
+              severity="secondary"
+              styleClass="op-btn"
+            />
+            <p-button
+              [rounded]="true"
+              label="Withdraw"
+              icon="pi pi-file-import"
+              severity="secondary"
+              styleClass="op-btn"
+            />
+            <p-button
+              [rounded]="true"
+              label="Deposit"
+              icon="pi pi-upload"
+              severity="secondary"
+              styleClass="op-btn"
+              (onClick)="showDepositDialog()"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="dashboard-col-right">
+
+        <!-- Transactions Header -->
+        <div class="transactions-head">
+          <h2 class="section-title">Recent transactions</h2>
+          <p-button
+            label="See all"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            severity="secondary"
+            variant="text"
+            styleClass="see-all-btn"
+          />
+        </div>
+
+        <!-- Transactions List -->
+        <div class="transactions-list">
+          @if (recentTransactions.length > 0) {
+            @for (transaction of recentTransactions; track transaction.id) {
+              <div class="transaction-row">
+                <div class="transaction-left">
+                  <div class="transaction-icon">
+                    <lucide-icon name="move-up-right" [img]="MoveUpRight"></lucide-icon>
+                  </div>
+                  <div class="transaction-info">
+                    <h3 class="transaction-to">{{ transaction.to }}</h3>
+                    <p class="transaction-date">{{ transaction.date }}</p>
+                  </div>
+                </div>
+
+                <div class="transaction-amount">
+                  ${{ transaction.amount }},00
+                </div>
+              </div>
+            }
+          } @else {
+            <div class="empty-state">
+              <i class="pi pi-inbox empty-icon"></i>
+              <h3 class="empty-title">No transactions yet</h3>
+              <p class="empty-sub">Your recent activity will appear here.</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ==================== ACCOUNT SWITCHER POPOVER ==================== -->
+<p-popover #op styleClass="accounts-popover">
+  <div class="accounts-panel">
+    <h1 class="accounts-title">Available accounts</h1>
+
+    @for (account of userAccounts; track account.accountId) {
+      <div
+        class="account-row"
+        [class.account-row-active]="activeAccount?.accountId == account.accountId"
+      >
+        <div>
+          <h2 class="account-number">
+            •••• •••• •••• {{ account.accountId?.substring(account.accountId!.lastIndexOf("-") + 1, account.accountId?.length) }}
+          </h2>
+          <p class="account-balance">
+            Balance: <strong>{{ account.balance }} {{ account.currency }}</strong>
+          </p>
+        </div>
+
+        <p-button
+          icon="pi pi-sync"
+          size="small"
+          variant="text"
+          (onClick)="switchAccount(account!.accountId!)"
+          [disabled]="activeAccount?.accountId == account!.accountId"
+          styleClass="account-switch-btn"
+        />
+      </div>
+    }
+  </div>
+</p-popover>
+
+
+<!-- ==================== DEPOSIT DIALOG ==================== -->
+<p-dialog
+  [(visible)]="depositDialogVisible"
+  [style]="{ width: '30rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="deposit-dialog"
+>
+  <ng-template pTemplate="header">
+    <div class="dialog-header">
+      <div class="dialog-icon">
+        <i class="pi pi-wallet"></i>
+      </div>
+      <div>
+        <h2 class="dialog-title">Deposit funds</h2>
+        <p class="dialog-sub">Add money to your active account</p>
+      </div>
+    </div>
+  </ng-template>
+
+  <form class="dialog-form">
+    <div class="field">
+      <label for="balance" class="field-label">Amount</label>
+      <input
+        pInputText
+        id="balance"
+        placeholder="0.00"
+        aria-describedby="balance-help"
+        formControlName="balance"
+        fluid
+      />
+      <small id="balance-help" class="field-help">Enter the amount you want to deposit.</small>
+    </div>
+
+    <div class="field">
+      <label for="currency" class="field-label">Currency</label>
+      <input
+        pInputText
+        id="currency"
+        placeholder="USD"
+        aria-describedby="currency-help"
+        formControlName="currency"
+        fluid
+      />
+      <small id="currency-help" class="field-help">The currency for this deposit.</small>
+    </div>
+
+    <p-button
+      label="Deposit now"
+      icon="pi pi-save"
+      size="small"
+      styleClass="deposit-submit"
+    />
+  </form>
+</p-dialog>

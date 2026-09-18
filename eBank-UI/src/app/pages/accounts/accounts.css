@@ -1,0 +1,420 @@
+/* ============================================================
+   PAGE LAYOUT
+   ============================================================ */
+
+.account-management-page {
+  padding: 1.5rem 0;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.header-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #a21caf;
+  background: #fae8ff;
+  border: 1px solid rgba(217, 70, 239, 0.25);
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 0.6rem;
+}
+
+.header-eyebrow i {
+  font-size: 0.75rem;
+}
+
+.header-title {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #1f2937;
+  letter-spacing: -0.5px;
+  margin: 0 0 0.25rem;
+  line-height: 1.2;
+}
+
+.header-sub {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.add-account-btn {
+  background: linear-gradient(135deg, #8b5cf6, #d946ef) !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  padding: 0.65rem 1.5rem !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 8px 20px -8px rgba(139, 92, 246, 0.5);
+  transition: all 0.25s ease !important;
+}
+
+.add-account-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -10px rgba(139, 92, 246, 0.7);
+}
+
+/* ============================================================
+   TABLE CARD
+   ============================================================ */
+
+.table-card {
+  background: #ffffff;
+  border: 1px solid rgba(217, 70, 239, 0.1);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 2px 12px -4px rgba(217, 70, 239, 0.08);
+}
+
+/* ---------- PrimeNG Table Overrides ---------- */
+
+:host ::ng-deep .accounts-table .p-datatable-header,
+:host ::ng-deep .accounts-table .p-datatable-footer {
+  background: transparent !important;
+  border: none !important;
+}
+
+:host ::ng-deep .accounts-table .p-datatable-thead > tr > th {
+  background: #fdf4ff !important;
+  color: #701a75 !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(217, 70, 239, 0.12) !important;
+  padding: 0.9rem 1rem !important;
+}
+
+:host ::ng-deep .accounts-table .p-datatable-tbody > tr {
+  background: #ffffff !important;
+  transition: background 0.2s ease;
+}
+
+:host ::ng-deep .accounts-table .p-datatable-tbody > tr:hover {
+  background: #fdf4ff !important;
+}
+
+:host ::ng-deep .accounts-table .p-datatable-tbody > tr > td {
+  border: none !important;
+  border-bottom: 1px solid rgba(217, 70, 239, 0.06) !important;
+  padding: 0.9rem 1rem !important;
+  font-size: 0.85rem;
+  color: #374151;
+  vertical-align: middle;
+}
+
+:host ::ng-deep .accounts-table .p-paginator {
+  background: transparent !important;
+  border: none !important;
+  border-top: 1px solid rgba(217, 70, 239, 0.08) !important;
+  padding: 0.75rem 1rem !important;
+}
+
+:host ::ng-deep .accounts-table .p-paginator .p-paginator-page.p-highlight {
+  background: linear-gradient(135deg, #8b5cf6, #d946ef) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+}
+
+/* ---------- Cell Styles ---------- */
+
+.account-id {
+  font-family: ui-monospace, monospace;
+  font-size: 0.78rem;
+  color: #701a75;
+  background: #fae8ff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.amount-cell {
+  font-weight: 700;
+  color: #1f2937;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.currency-cell {
+  font-weight: 600;
+  color: #6b7280;
+  font-size: 0.8rem;
+}
+
+.date-cell {
+  color: #6b7280;
+  font-size: 0.82rem;
+}
+
+/* ---------- Status Pill ---------- */
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.status-active {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.status-active .status-dot {
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+}
+
+.status-inactive {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.status-inactive .status-dot {
+  background: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25);
+}
+
+/* ---------- User Cell ---------- */
+
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
+.user-cell span {
+  font-weight: 500;
+  color: #1f2937;
+  font-size: 0.85rem;
+}
+
+/* ---------- Actions Cell ---------- */
+
+.actions-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ---------- Empty State ---------- */
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  color: #d946ef;
+  opacity: 0.4;
+  margin-bottom: 0.75rem;
+  display: inline-block;
+}
+
+.empty-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #701a75;
+  margin: 0 0 0.25rem;
+}
+
+.empty-sub {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.empty-sub strong {
+  color: #a21caf;
+  font-weight: 700;
+}
+
+/* ============================================================
+   DIALOGS
+   ============================================================ */
+
+:host ::ng-deep .account-dialog .p-dialog-header {
+  padding: 1.25rem 1.75rem 0.5rem !important;
+  border-bottom: none !important;
+}
+
+:host ::ng-deep .account-dialog .p-dialog-content {
+  padding: 0 1.75rem 1.5rem !important;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dialog-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 0.85rem;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  color: #ffffff;
+  font-size: 1.15rem;
+  box-shadow: 0 8px 18px -8px rgba(139, 92, 246, 0.55);
+  flex-shrink: 0;
+}
+
+.dialog-icon-edit {
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  box-shadow: 0 8px 18px -8px rgba(59, 130, 246, 0.55);
+}
+
+.dialog-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: -0.3px;
+}
+
+.dialog-sub {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 2px 0 0;
+}
+
+/* ---------- Form Layout ---------- */
+
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 0.5rem 0 0;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.field-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #374151;
+  letter-spacing: 0.01em;
+}
+
+.field-help {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  margin-top: -2px;
+}
+
+/* ---------- Inputs focus ring ---------- */
+
+:host ::ng-deep .account-dialog .p-inputtext:focus,
+:host ::ng-deep .account-dialog .p-inputnumber-input:focus,
+:host ::ng-deep .account-dialog .p-select:not(.p-disabled).p-focus {
+  border-color: #d946ef !important;
+  box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.15) !important;
+}
+
+/* ---------- Submit Button ---------- */
+
+.dialog-submit {
+  background: linear-gradient(135deg, #8b5cf6, #d946ef) !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  padding: 0.8rem 1rem !important;
+  border-radius: 0.75rem !important;
+  margin-top: 0.5rem;
+  box-shadow: 0 8px 20px -8px rgba(139, 92, 246, 0.55);
+  transition: all 0.25s ease !important;
+  width: 100%;
+}
+
+.dialog-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -10px rgba(139, 92, 246, 0.7);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .add-account-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .header-title {
+    font-size: 1.35rem;
+  }
+}

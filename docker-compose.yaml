@@ -34,7 +34,6 @@ services:
       - ./kafka/data:/var/lib/kafka/data
     networks:
       - microservice-net
-
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
@@ -47,51 +46,6 @@ services:
       - kafka
     networks:
       - microservice-net
-  user-service:
-    build: user-service/.
-    env_file:
-      - ".env"
-    networks:
-      - microservice-net
-    container_name: user-service-container
-    ports:
-      - "8083:8080"
-
-  account-service:
-    build: account-service/.
-    env_file:
-      - ".env"
-    networks:
-      - microservice-net
-    container_name: account-service-container
-    ports:
-      - "8085:8080"
-    depends_on:
-      - user-service
-      - kafka
-  transaction-service:
-    build: transaction-service/.
-    env_file:
-      - ".env"
-    networks:
-      - microservice-net
-    container_name: transaction-service-container
-    ports:
-      - "8084:8080"
-    depends_on:
-      - kafka
-      - account-service
-  notification-service:
-    build: notification-service/.
-    env_file:
-      - ".env"
-    networks:
-      - microservice-net
-    container_name: notification-service-container
-    ports:
-      - "8082:8080"
-    depends_on:
-      - kafka
 
   mongo-db:
     image: mongo:latest
@@ -103,12 +57,11 @@ services:
 
   mysql-db:
     image: mysql/mysql-server:8.0
-    container_name: mysql-container
+    container_name: mysql
     env_file:
       - ".env"
     networks:
       - microservice-net
     ports :
       - "3306:3306"
-  
-
+    command: --default-authentication-plugin=mysql_native_password

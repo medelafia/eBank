@@ -1,0 +1,311 @@
+<div class="w-full account-management-page">
+  <p-toast />
+
+  <!-- ==================== HEADER ==================== -->
+  <div class="page-header">
+    <div>
+      <div class="header-eyebrow">
+        <i class="pi pi-wallet"></i>
+        <span>Admin</span>
+      </div>
+      <h1 class="header-title">Account Management</h1>
+      <p class="header-sub">Manage every customer account in one place.</p>
+    </div>
+
+    <p-button
+      label="Add account"
+      icon="pi pi-plus"
+      size="small"
+      styleClass="add-account-btn"
+      (onClick)="showAddAccountDialog()"
+    />
+  </div>
+
+  <!-- ==================== TABLE CARD ==================== -->
+  <div class="table-card">
+    <p-table
+      [value]="accounts"
+      [paginator]="true"
+      [rows]="5"
+      [tableStyle]="{ 'min-width': '50rem' }"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      [loading]="loadingGetAccounts()"
+      size="small"
+      styleClass="accounts-table"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} accounts"
+    >
+      <ng-template #header>
+        <tr>
+          <th>Account ID</th>
+          <th>Balance</th>
+          <th>Type</th>
+          <th>Currency</th>
+          <th>Created</th>
+          <th>Status</th>
+          <th>User</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </ng-template>
+
+      <ng-template #body let-account>
+        <tr>
+          <!-- Account ID -->
+          <td>
+            <span class="account-id" [title]="account.accountId">
+              {{ account.accountId }}
+            </span>
+          </td>
+
+          <!-- Balance -->
+          <td class="amount-cell">
+            {{ account.balance | number:'1.2-2' }}
+          </td>
+
+          <!-- Type -->
+          <td>
+            @if (account.accountType == "SAVING_ACCOUNT") {
+              <p-tag severity="info" [value]="account.accountType" icon="pi pi-wallet" />
+            } @else if (account.accountType == "CURRENT_ACCOUNT") {
+              <p-tag severity="success" [value]="account.accountType" icon="pi pi-wallet" />
+            } @else if (account.accountType == "CHECKING_ACCOUNT") {
+              <p-tag severity="danger" [value]="account.accountType" icon="pi pi-wallet" />
+            } @else if (account.accountType == "FIXED_ACCOUNT") {
+              <p-tag severity="warn" [value]="account.accountType" icon="pi pi-wallet" />
+            }
+          </td>
+
+          <!-- Currency -->
+          <td class="currency-cell">{{ account.currency | uppercase }}</td>
+
+          <!-- Created -->
+          <td class="date-cell">{{ account.createdAt }}</td>
+
+          <!-- Status -->
+          <td>
+            @if (account.status == "ACTIVE") {
+              <span class="status-pill status-active">
+                <span class="status-dot"></span>
+                {{ account.status }}
+              </span>
+            } @else {
+              <span class="status-pill status-inactive">
+                <span class="status-dot"></span>
+                {{ account.status }}
+              </span>
+            }
+          </td>
+
+          <!-- User -->
+          <td>
+            <div class="user-cell">
+              <div class="user-avatar">
+                {{ account.user.firstName.charAt(0) }}{{ account.user.lastName.charAt(0) }}
+              </div>
+              <span>{{ account.user.firstName }} {{ account.user.lastName }}</span>
+            </div>
+          </td>
+
+          <!-- Actions -->
+          <td>
+            <div class="actions-cell">
+              <p-button
+                icon="pi pi-pencil"
+                severity="info"
+                size="small"
+                variant="text"
+                [rounded]="true"
+                pTooltip="Edit account"
+                tooltipPosition="top"
+                (onClick)="showEditAccountDialog(account)"
+              />
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                size="small"
+                variant="text"
+                [rounded]="true"
+                pTooltip="Delete account"
+                tooltipPosition="top"
+                (onClick)="deleteAccount(account.id)"
+              />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="8">
+            <div class="empty-state">
+              <i class="pi pi-inbox empty-icon"></i>
+              <h3 class="empty-title">No accounts yet</h3>
+              <p class="empty-sub">Click <strong>Add account</strong> to create the first one.</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- ==================== ADD ACCOUNT DIALOG ==================== -->
+  <p-dialog
+    [(visible)]="addDialogVisible"
+    [style]="{ width: '40rem' }"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    styleClass="account-dialog"
+  >
+    <ng-template pTemplate="header">
+      <div class="dialog-header">
+        <div class="dialog-icon">
+          <i class="pi pi-plus"></i>
+        </div>
+        <div>
+          <h2 class="dialog-title">Add Account</h2>
+          <p class="dialog-sub">Create a new account for a customer.</p>
+        </div>
+      </div>
+    </ng-template>
+
+    <form class="dialog-form" [formGroup]="addAccountFormGroup">
+      <!-- Balance + Currency -->
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">Balance</label>
+          <p-inputnumber
+            inputId="balance"
+            placeholder="0.00"
+            aria-describedby="balance-help"
+            formControlName="balance"
+            fluid
+          />
+          <small id="balance-help" class="field-help">Starting balance for the account.</small>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Currency</label>
+          <input
+            pInputText
+            id="currency"
+            placeholder="USD"
+            aria-describedby="currency-help"
+            formControlName="currency"
+          />
+          <small id="currency-help" class="field-help">ISO currency code (USD, EUR…).</small>
+        </div>
+      </div>
+
+      <!-- Account Type -->
+      <div class="field">
+        <label class="field-label">Account type</label>
+        <p-select
+          [options]="accountTypes"
+          optionLabel="name"
+          placeholder="Select an account type"
+          styleClass="w-full"
+          formControlName="accountType"
+        />
+        <small class="field-help">Choose the category that fits this account.</small>
+      </div>
+
+      <!-- Status -->
+      <div class="field">
+        <label class="field-label">Status</label>
+        <p-select
+          [options]="accountStatus"
+          optionLabel="name"
+          placeholder="Select a status"
+          styleClass="w-full"
+          formControlName="status"
+        />
+        <small class="field-help">Whether the account is active or suspended.</small>
+      </div>
+
+      <!-- User -->
+      <div class="field">
+        <label class="field-label">Owner</label>
+        <p-select
+          [options]="usersToRender"
+          optionLabel="name"
+          placeholder="Select user"
+          styleClass="w-full"
+          formControlName="user"
+        />
+        <small class="field-help">The customer who owns this account.</small>
+      </div>
+
+      <p-button
+        [loading]="loadingSaveAccount"
+        label="Save Account"
+        icon="pi pi-save"
+        size="small"
+        styleClass="dialog-submit"
+        (onClick)="saveAccount()"
+      />
+    </form>
+  </p-dialog>
+
+  <!-- ==================== EDIT ACCOUNT DIALOG ==================== -->
+  @if (accountToEdit != undefined) {
+    <p-dialog
+      [(visible)]="editDialogVisible"
+      [style]="{ width: '40rem' }"
+      [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+      [modal]="true"
+      [draggable]="false"
+      [resizable]="false"
+      styleClass="account-dialog"
+    >
+      <ng-template pTemplate="header">
+        <div class="dialog-header">
+          <div class="dialog-icon dialog-icon-edit">
+            <i class="pi pi-pencil"></i>
+          </div>
+          <div>
+            <h2 class="dialog-title">Edit Account</h2>
+            <p class="dialog-sub">Update the details of this account.</p>
+          </div>
+        </div>
+      </ng-template>
+      <form class="dialog-form" [formGroup]="editAccountFormGroup">
+        <!-- Account Type -->
+        <div class="field">
+          <label class="field-label">Account type</label>
+          <p-select
+            [options]="accountTypes"
+            formControlName="accountType"
+            optionLabel="name"
+            placeholder="Select an account type"
+            styleClass="w-full"
+          />
+          <small class="field-help">Change the category of this account.</small>
+        </div>
+
+        <!-- Status -->
+        <div class="field">
+          <label class="field-label">Status</label>
+          <p-select
+            [options]="accountStatus"
+            formControlName="status"
+            optionLabel="name"
+            placeholder="Select a status"
+            styleClass="w-full"
+          />
+          <small class="field-help">Toggle the account between active and suspended.</small>
+        </div>
+
+        <p-button
+          label="Update Account"
+          icon="pi pi-save"
+          size="small"
+          styleClass="dialog-submit"
+          (onClick)="editAccount()"
+          [loading]="loadingEditAccount"
+        />
+      </form>
+    </p-dialog>
+  }
+</div>

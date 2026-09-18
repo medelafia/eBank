@@ -1,8 +1,11 @@
 package com.userservice.controller;
 
 
+import com.userservice.dto.UserRequest;
+import com.userservice.dto.UserResponse;
 import com.userservice.entities.User;
 import com.userservice.services.UserServices;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -23,22 +26,22 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<User>> getAllUsers(@RequestParam(defaultValue = "0" , required = false) int page, @RequestParam(defaultValue = "5" , required = false) int size) {
+    public ResponseEntity<List<UserResponse>> getAllUsers(@RequestParam(defaultValue = "0" , required = false) int page, @RequestParam(defaultValue = "5" , required = false) int size) {
         return ResponseEntity.ok(this.userServices.getAllUsers());
     }
 
     @PostMapping("/user")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserRequest user) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userServices.createUser(user));
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<User> getUser(@PathVariable String userId ) {
+    public ResponseEntity<UserResponse> getUser(@PathVariable String userId ) {
         return ResponseEntity.ok(this.userServices.findUserById(userId)) ;
     }
 
     @PutMapping("/user")
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
+    public ResponseEntity<UserResponse> updateUser(@RequestBody UserRequest user) {
         return ResponseEntity.ok(this.userServices.updateUser(user));
     }
 
